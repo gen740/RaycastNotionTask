@@ -1,11 +1,11 @@
 import type { EmojiList } from "./emoji";
 
-type TaskStatus = "done" | "in progress" | "not started" | null;
+export type TaskStatus = "done" | "in progress" | "not started" | null;
 
 export interface Task {
   title: string;
   status: TaskStatus;
-  dueDate: Date;
+  dueDate?: Date;
   pageId: string;
 }
 

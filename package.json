@@ -3,7 +3,7 @@
   "name": "notion-task",
   "title": "Notion task",
   "description": "Manage tasks created by Notion",
-  "icon": "command-icon.png",
+  "icon": "notion-logo.png",
   "author": "gen740",
   "categories": [
     "Productivity"

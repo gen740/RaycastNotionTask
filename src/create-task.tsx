@@ -2,9 +2,10 @@ import { ActionPanel, Detail, Action, Form } from "@raycast/api";
 import { useState } from "react";
 import createTask from "./utils/createTask";
 import { EmojiList } from "./emoji";
-import type { TaskFormValue } from "./type";
+import type { Emoji, TaskFormValue } from "./type";
+import { withNotionAccessToken } from "./utils/accessToken";
 
-export default function Command() {
+export function Create() {
   const [submittedValue, setSubmittedValue] = useState<TaskFormValue | null>(
     null,
   );
@@ -42,25 +43,28 @@ export default function Command() {
         </ActionPanel>
       }
     >
+      <Form.TextField id="title" title="タイトル" />
+      <Form.DatePicker id="deadline" title="期限" />
       <Form.TextField
         id="emoji"
         title="アイコン"
         error={emojiError}
         onChange={dropEmojiErrorIfNeeded}
         onBlur={(event) => {
-          console.log(emojiError);
+          console.log(event);
           if (
-            event.target?.value !== undefined &&
-            !EmojiList.includes(event.target?.value)
+            event.target?.value === undefined ||
+            event.target.value === "" ||
+            EmojiList.includes(event.target?.value as Emoji)
           ) {
-            setEmojiError("Not valid emoji");
-          } else {
             dropEmojiErrorIfNeeded();
+          } else {
+            setEmojiError("Not valid emoji");
           }
         }}
       />
-      <Form.TextField id="title" title="タイトル" />
-      <Form.DatePicker id="deadline" title="期限" />
     </Form>
   );
 }
+
+export default withNotionAccessToken(Create);

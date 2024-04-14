@@ -1,26 +1,27 @@
 import { Client } from "@notionhq/client";
-import type {
-  PageObjectResponse,
-  UpdateDatabaseParameters,
-} from "@notionhq/client/build/src/api-endpoints";
 
 import { getPreferenceValues } from "@raycast/api";
-import parseRichTextItem from "./parseRichTextItem";
+import type { TaskFormValue } from "../type";
 
 const { notion_token, task_database_id } = getPreferenceValues<Preferences>();
 
 export default function createTask(task: TaskFormValue) {
   const client = new Client({ auth: notion_token });
 
-  const response = client.pages.create({
+  client.pages.create({
     parent: {
       type: "database_id",
       database_id: task_database_id,
     },
-    icon: {
-      type: "emoji",
-      emoji: task.emoji,
-    },
+    icon: (() => {
+      if (task.emoji === undefined) {
+        return undefined;
+      }
+      return {
+        type: "emoji",
+        emoji: task.emoji,
+      };
+    })(),
     properties: {
       タイトル: {
         type: "title",
@@ -49,5 +50,4 @@ export default function createTask(task: TaskFormValue) {
       },
     },
   });
-  console.log(response);
 }

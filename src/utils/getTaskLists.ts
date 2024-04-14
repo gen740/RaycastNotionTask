@@ -3,24 +3,23 @@ import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoint
 
 import { getPreferenceValues } from "@raycast/api";
 import parseRichTextItem from "./parseRichTextItem";
+import type { Task, TaskLists } from "../type";
 
 const { notion_token, task_database_id } = getPreferenceValues<Preferences>();
 
 export default async function getTaskLists(): Promise<TaskLists> {
-  const notionClient = new Client({ auth: notion_token });
+  const client = new Client({ auth: notion_token });
 
   return (
-    await notionClient.databases.query({
+    await client.databases.query({
       database_id: task_database_id,
     })
   ).results.map((task) => {
     const t = task as PageObjectResponse;
-    console.log(task);
 
     const ret: Task = {
       title: "",
       status: "not started",
-      dueDate: new Date(),
       pageId: task.id,
     };
 
@@ -55,6 +54,19 @@ export default async function getTaskLists(): Promise<TaskLists> {
           break;
         case null:
           ret.status = null;
+      }
+    }
+
+    {
+      // get date
+      const dueDate = t.properties.期限;
+      if (
+        dueDate !== undefined &&
+        dueDate.type === "date" &&
+        dueDate.date !== undefined &&
+        dueDate.date !== null
+      ) {
+        ret.dueDate = new Date(dueDate.date.start);
       }
     }
 
