@@ -1,6 +1,6 @@
+import { Client } from "@notionhq/client";
 import { getPreferenceValues } from "@raycast/api";
 import type { TaskStatus } from "../type";
-import { Client } from "@notionhq/client";
 
 const { notion_token } = getPreferenceValues<Preferences>();
 

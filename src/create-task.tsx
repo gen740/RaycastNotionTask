@@ -1,9 +1,9 @@
-import { ActionPanel, Detail, Action, Form } from "@raycast/api";
+import { Action, ActionPanel, Detail, Form } from "@raycast/api";
 import { useState } from "react";
-import createTask from "./utils/createTask";
 import { EmojiList } from "./emoji";
 import type { Emoji, TaskFormValue } from "./type";
 import { withNotionAccessToken } from "./utils/accessToken";
+import createTask from "./utils/createTask";
 
 export function Create() {
   const [submittedValue, setSubmittedValue] = useState<TaskFormValue | null>(

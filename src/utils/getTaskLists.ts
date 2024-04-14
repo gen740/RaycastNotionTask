@@ -2,8 +2,8 @@ import { Client } from "@notionhq/client";
 import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 import { getPreferenceValues } from "@raycast/api";
-import parseRichTextItem from "./parseRichTextItem";
 import type { Task, TaskLists } from "../type";
+import parseRichTextItem from "./parseRichTextItem";
 
 const { notion_token, task_database_id } = getPreferenceValues<Preferences>();
 

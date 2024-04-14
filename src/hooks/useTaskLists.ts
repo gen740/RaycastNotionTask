@@ -1,6 +1,6 @@
 import { useCachedPromise } from "@raycast/utils";
-import getTaskLists from "../utils/getTaskLists";
 import type { TaskLists } from "../type";
+import getTaskLists from "../utils/getTaskLists";
 
 export function useTaskLists() {
   const { data, revalidate } = useCachedPromise(getTaskLists, []);

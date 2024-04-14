@@ -1,7 +1,7 @@
-import { List, Color, ActionPanel, Action } from "@raycast/api";
-import { withNotionAccessToken } from "./utils/accessToken";
+import { Action, ActionPanel, Color, List } from "@raycast/api";
 import { useTaskLists } from "./hooks/useTaskLists";
 import type { Task } from "./type";
+import { withNotionAccessToken } from "./utils/accessToken";
 import { changeTaskStatus } from "./utils/changeTaskStatus";
 
 export function Search() {
