@@ -1,0 +1,63 @@
+import { Client } from "@notionhq/client";
+import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+
+import { getPreferenceValues } from "@raycast/api";
+import parseRichTextItem from "./parseRichTextItem";
+
+const { notion_token, task_database_id } = getPreferenceValues<Preferences>();
+
+export default async function getTaskLists(): Promise<TaskLists> {
+  const notionClient = new Client({ auth: notion_token });
+
+  return (
+    await notionClient.databases.query({
+      database_id: task_database_id,
+    })
+  ).results.map((task) => {
+    const t = task as PageObjectResponse;
+    console.log(task);
+
+    const ret: Task = {
+      title: "",
+      status: "not started",
+      dueDate: new Date(),
+      pageId: task.id,
+    };
+
+    {
+      let emoji = "";
+      if (t.icon?.type === "emoji") {
+        emoji = t.icon.emoji;
+      }
+      // get title
+      const title = t.properties.タイトル;
+      if (title === undefined || title.type !== "title") {
+        throw "Title has not been found";
+      }
+      ret.title = `${emoji} ${parseRichTextItem(title.title)}`;
+    }
+
+    {
+      // get status
+      const status = t.properties.ステータス;
+      if (status === undefined || status.type !== "status") {
+        throw "Status has not been found";
+      }
+      switch (status.status?.id) {
+        case "1":
+          ret.status = "not started";
+          break;
+        case "2":
+          ret.status = "in progress";
+          break;
+        case "3":
+          ret.status = "done";
+          break;
+        case null:
+          ret.status = null;
+      }
+    }
+
+    return ret;
+  });
+}

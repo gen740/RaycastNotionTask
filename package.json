@@ -1,0 +1,70 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "notion-task",
+  "title": "Notion task",
+  "description": "Manage tasks created by Notion",
+  "icon": "command-icon.png",
+  "author": "gen740",
+  "categories": [
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "search-tasks",
+      "title": "Search tasks",
+      "subtitle": "Notion Search tasks",
+      "description": "Search tasks created by Notion",
+      "mode": "view"
+    },
+    {
+      "name": "create-task",
+      "title": "Create task",
+      "subtitle": "Notion Create tasks",
+      "description": "Create task in Notion",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "notion_token",
+      "type": "password",
+      "title": "Internal Integration Secret",
+      "required": true,
+      "description": "In Notion, go to Settings & members > My connections > Develop or manage integrations > New integration",
+      "placeholder": "secret_FGDeSrZNodQuaJEqWzvxcTyrPlpBHYvdLpTZykrWEu"
+    },
+    {
+      "name": "task_database_id",
+      "type": "textfield",
+      "title": "Task database id",
+      "required": true,
+      "description": "In Notion, go to Settings & members > My connections > Develop or manage integrations > New integration",
+      "placeholder": "723bd277-0590-4c8b-ab12-d552bcbc08dd"
+    }
+  ],
+  "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.15",
+    "@mui/material": "^5.15.15",
+    "@notionhq/client": "^2.2.14",
+    "@raycast/api": "^1.71.3",
+    "@raycast/utils": "^1.14.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.6",
+    "@types/node": "20.8.10",
+    "@types/react": "18.2.27",
+    "eslint": "^8.51.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "npx @raycast/api@latest publish"
+  }
+}
