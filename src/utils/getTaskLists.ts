@@ -76,8 +76,15 @@ export default async function getTaskLists(): Promise<TaskLists> {
     }
 
     taskInfo.contentMarkdown = async () => {
-      return n2m.toMarkdownString(await n2m.pageToMarkdown(taskInfo.pageId))
-        .parent;
+      let md = "";
+      try {
+        md = n2m.toMarkdownString(
+          await n2m.pageToMarkdown(taskInfo.pageId),
+        ).parent;
+      } catch (e) {
+        console.error(`Cannot find id = ${taskInfo.pageId}`);
+      }
+      return md;
     };
 
     ret.push(taskInfo);
