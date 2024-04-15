@@ -7,6 +7,7 @@ export interface Task {
   status: TaskStatus;
   dueDate?: Date;
   pageId: string;
+  contentMarkdown?: () => Promise<string|undefined>;
 }
 
 // biome-ignore format:

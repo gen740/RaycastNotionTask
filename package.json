@@ -50,7 +50,8 @@
     "@mui/material": "^5.15.15",
     "@notionhq/client": "^2.2.14",
     "@raycast/api": "^1.71.3",
-    "@raycast/utils": "^1.14.0"
+    "@raycast/utils": "^1.14.0",
+    "notion-to-md": "^3.1.1"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.6",

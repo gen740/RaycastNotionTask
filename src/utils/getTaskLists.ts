@@ -4,20 +4,26 @@ import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoint
 import { getPreferenceValues } from "@raycast/api";
 import type { Task, TaskLists } from "../type";
 import parseRichTextItem from "./parseRichTextItem";
+import { NotionToMarkdown } from "notion-to-md";
 
 const { notion_token, task_database_id } = getPreferenceValues<Preferences>();
 
 export default async function getTaskLists(): Promise<TaskLists> {
   const client = new Client({ auth: notion_token });
+  const n2m = new NotionToMarkdown({ notionClient: client });
 
-  return (
+  const ret: TaskLists = [];
+
+  const tasks = (
     await client.databases.query({
       database_id: task_database_id,
     })
-  ).results.map((task) => {
+  ).results;
+
+  for (const task of tasks) {
     const t = task as PageObjectResponse;
 
-    const ret: Task = {
+    const taskInfo: Task = {
       title: "",
       status: "not started",
       pageId: task.id,
@@ -33,7 +39,7 @@ export default async function getTaskLists(): Promise<TaskLists> {
       if (title === undefined || title.type !== "title") {
         throw "Title has not been found";
       }
-      ret.title = `${emoji} ${parseRichTextItem(title.title)}`;
+      taskInfo.title = `${emoji} ${parseRichTextItem(title.title)}`;
     }
 
     {
@@ -44,19 +50,18 @@ export default async function getTaskLists(): Promise<TaskLists> {
       }
       switch (status.status?.id) {
         case "1":
-          ret.status = "not started";
+          taskInfo.status = "not started";
           break;
         case "2":
-          ret.status = "in progress";
+          taskInfo.status = "in progress";
           break;
         case "3":
-          ret.status = "done";
+          taskInfo.status = "done";
           break;
         case null:
-          ret.status = null;
+          taskInfo.status = null;
       }
     }
-
     {
       // get date
       const dueDate = t.properties.期限;
@@ -66,10 +71,17 @@ export default async function getTaskLists(): Promise<TaskLists> {
         dueDate.date !== undefined &&
         dueDate.date !== null
       ) {
-        ret.dueDate = new Date(dueDate.date.start);
+        taskInfo.dueDate = new Date(dueDate.date.start);
       }
     }
 
-    return ret;
-  });
+    taskInfo.contentMarkdown = async () => {
+      return n2m.toMarkdownString(await n2m.pageToMarkdown(taskInfo.pageId))
+        .parent;
+    };
+
+    ret.push(taskInfo);
+  }
+
+  return ret;
 }
