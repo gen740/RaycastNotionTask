@@ -5,9 +5,7 @@
   "description": "Manage tasks created by Notion",
   "icon": "notion-logo.png",
   "author": "gen740",
-  "categories": [
-    "Productivity"
-  ],
+  "categories": ["Productivity"],
   "license": "MIT",
   "commands": [
     {
