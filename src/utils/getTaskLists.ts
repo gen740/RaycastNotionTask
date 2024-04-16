@@ -26,16 +26,18 @@ export default async function getTaskLists(): Promise<TaskLists> {
     const taskInfo: Task = {
       title: "",
       status: "not started",
+      details: "",
       pageId: task.id,
+      link: null,
     };
 
     {
+      // get title with emoji
       let emoji = "";
       if (t.icon?.type === "emoji") {
         emoji = t.icon.emoji;
       }
-      // get title
-      const title = t.properties.タイトル;
+      const title = t.properties.Title;
       if (title === undefined || title.type !== "title") {
         throw "Title has not been found";
       }
@@ -43,8 +45,17 @@ export default async function getTaskLists(): Promise<TaskLists> {
     }
 
     {
+      // get details
+      const details = t.properties.Details;
+      if (details === undefined || details.type !== "rich_text") {
+        throw "Details has not been found";
+      }
+      taskInfo.details = parseRichTextItem(details.rich_text);
+    }
+
+    {
       // get status
-      const status = t.properties.ステータス;
+      const status = t.properties.Status;
       if (status === undefined || status.type !== "status") {
         throw "Status has not been found";
       }
@@ -62,17 +73,31 @@ export default async function getTaskLists(): Promise<TaskLists> {
           taskInfo.status = null;
       }
     }
+
     {
       // get date
-      const dueDate = t.properties.期限;
-      if (
-        dueDate !== undefined &&
-        dueDate.type === "date" &&
-        dueDate.date !== undefined &&
-        dueDate.date !== null
-      ) {
-        taskInfo.dueDate = new Date(dueDate.date.start);
+      const dueDate = t.properties["Due Date"];
+      if (dueDate === undefined || dueDate.type !== "date") {
+        throw "Due Date has not been found";
       }
+      if (dueDate.date === null) {
+        taskInfo.dueDate = undefined;
+      } else {
+        taskInfo.dueDate = {
+          start: new Date(dueDate.date.start),
+          end:
+            dueDate.date.end === null ? undefined : new Date(dueDate.date.end),
+        };
+      }
+    }
+
+    {
+      // get Link
+      const link = t.properties.Link;
+      if (link === undefined || link.type !== "url") {
+        throw "Link has not been found";
+      }
+      taskInfo.link = link.url;
     }
 
     taskInfo.contentMarkdown = async () => {

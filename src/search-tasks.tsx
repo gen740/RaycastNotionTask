@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Color, Detail, List } from "@raycast/api";
+import { Action, ActionPanel, Color, Detail, Icon, List } from "@raycast/api";
 import type { Task, TaskLists } from "./type";
 import { changeTaskStatus } from "./utils/changeTaskStatus";
 import getTaskLists from "./utils/getTaskLists";
@@ -8,33 +8,100 @@ import { useEffect, useState } from "react";
 const TaskMarkdown = ({
   icon,
   task,
+  revalidate,
 }: {
   icon: {
     source: string;
     tintColor: Color;
   };
   task: Task;
+  revalidate: () => void;
 }) => {
-  const [md, setMd] = useState<string | undefined>(undefined);
-
+  const [mdContent, setMdContent] = useState<string | undefined>(undefined);
   useEffect(() => {
-    task.contentMarkdown?.().then(setMd);
+    task
+      .contentMarkdown?.()
+      .then((value) => setMdContent(value ?? "No Content"));
   });
   return (
     <Detail
-      isLoading={md === undefined}
-      markdown={`${md}`}
+      isLoading={mdContent === undefined}
+      markdown={`${mdContent}`}
       metadata={
         <Detail.Metadata>
           <Detail.Metadata.Label icon={icon} title="Title" text={task.title} />
           <Detail.Metadata.Label
-            title="期限"
-            text={task.dueDate?.toDateString() ?? "No date"}
+            title="Due Date"
+            text={task.dueDate?.start.toDateString() ?? "No date"}
           />
         </Detail.Metadata>
       }
+      actions={
+        <ActionPanel>
+          <Action.OpenInBrowser
+            url={`https://notion.so/${task.pageId.replace(/-/g, "")}`}
+            shortcut={{ modifiers: ["cmd"], key: "o" }}
+          />
+          {task.link === null ? (
+            <></>
+          ) : (
+            <Action.OpenInBrowser
+              title="Open Attached Link"
+              url={task.link}
+              shortcut={{ modifiers: ["ctrl"], key: "o" }}
+            />
+          )}
+          <Action
+            title="Mark As Done"
+            icon={TaskIcon.Done}
+            onAction={() => {
+              changeTaskStatus(task.pageId, "done");
+              setTimeout(revalidate, 200);
+            }}
+            shortcut={{ modifiers: ["ctrl"], key: "d" }}
+          />
+          <Action
+            title="Mark As In Progress"
+            icon={TaskIcon.InProgress}
+            onAction={() => {
+              changeTaskStatus(task.pageId, "in progress");
+              setTimeout(revalidate, 200);
+            }}
+            shortcut={{ modifiers: ["ctrl"], key: "i" }}
+          />
+          <Action
+            title="Mark As Not Started"
+            icon={TaskIcon.NotStarted}
+            onAction={() => {
+              changeTaskStatus(task.pageId, "not started");
+              setTimeout(revalidate, 200);
+            }}
+            shortcut={{ modifiers: ["ctrl"], key: "x" }}
+          />
+          <Action
+            title="Reload"
+            onAction={revalidate}
+            shortcut={{ modifiers: ["cmd"], key: "r" }}
+          />
+        </ActionPanel>
+      }
     />
   );
+};
+
+const TaskIcon = {
+  Done: {
+    source: "icon/kanban_status_completed.png",
+    tintColor: Color.Blue,
+  },
+  InProgress: {
+    source: "icon/kanban_status_started.png",
+    tintColor: Color.Green,
+  },
+  NotStarted: {
+    source: "icon/kanban_status_not_started.png",
+    tintColor: Color.Orange,
+  },
 };
 
 const Items = ({
@@ -48,62 +115,117 @@ const Items = ({
     };
     switch (task.status) {
       case "done":
-        icon = {
-          source: "icon/kanban_status_completed.png",
-          tintColor: Color.Blue,
-        };
+        icon = TaskIcon.Done;
         break;
       case "in progress":
-        icon = {
-          source: "icon/kanban_status_started.png",
-          tintColor: Color.Green,
-        };
+        icon = TaskIcon.InProgress;
         break;
       case "not started":
-        icon = {
-          source: "icon/kanban_status_not_started.png",
-          tintColor: Color.Orange,
-        };
+        icon = TaskIcon.NotStarted;
         break;
     }
+
+    const accessories: {
+      icon:
+        | {
+            source: string;
+            tintColor?: Color;
+          }
+        | Icon;
+      text: string;
+    }[] = [];
+
+    if (task.link !== null) {
+      accessories.push({
+        icon: Icon.Link,
+        text: "",
+      });
+    }
+
+    let dueDateStart: string | undefined = undefined;
+    if (task.dueDate !== undefined) {
+      const mm = String(task.dueDate.start.getMonth() + 1).padStart(2, "0");
+      const dd = String(task.dueDate.start.getDate()).padStart(2, "0");
+      dueDateStart = `${mm}/${dd}`;
+      accessories.push({
+        icon: {
+          source:
+            task.dueDate.end === undefined
+              ? "icon/date_end.png"
+              : "icon/date_start.png",
+        },
+        text: dueDateStart,
+      });
+    }
+
+    let dueDateEnd: string | undefined = undefined;
+    if (task.dueDate?.end !== undefined) {
+      const mm = String(task.dueDate.end.getMonth() + 1).padStart(2, "0");
+      const dd = String(task.dueDate.end.getDate()).padStart(2, "0");
+      dueDateEnd = `${mm}/${dd}`;
+      accessories.push({
+        icon: {
+          source: "icon/date_end.png",
+        },
+        text: dueDateEnd,
+      });
+    }
+
     return (
       <List.Item
         title={`${task.title}`}
         key={task.title}
         icon={icon}
+        subtitle={task.details}
+        accessories={accessories}
         actions={
           <ActionPanel>
             <Action.Push
-              title="push"
-              target={<TaskMarkdown icon={icon} task={task} />}
+              title="Show Detail"
+              icon={Icon.AppWindowSidebarLeft}
+              target={
+                <TaskMarkdown icon={icon} task={task} revalidate={revalidate} />
+              }
             />
+            {task.link === null ? (
+              <></>
+            ) : (
+              <Action.OpenInBrowser
+                title="Open Attached Link"
+                url={task.link}
+                shortcut={{ modifiers: ["ctrl"], key: "o" }}
+              />
+            )}
             <Action.OpenInBrowser
               url={`https://notion.so/${task.pageId.replace(/-/g, "")}`}
               shortcut={{ modifiers: ["cmd"], key: "o" }}
             />
             <Action
               title="Mark As Done"
+              icon={TaskIcon.Done}
               onAction={() => {
                 changeTaskStatus(task.pageId, "done");
                 setTimeout(revalidate, 200);
               }}
-              shortcut={{ modifiers: ["cmd"], key: "d" }}
+              shortcut={{ modifiers: ["ctrl"], key: "d" }}
             />
             <Action
               title="Mark As In Progress"
+              icon={TaskIcon.InProgress}
               onAction={() => {
                 changeTaskStatus(task.pageId, "in progress");
                 setTimeout(revalidate, 200);
               }}
-              shortcut={{ modifiers: ["cmd"], key: "i" }}
+              shortcut={{ modifiers: ["ctrl"], key: "i" }}
             />
             <Action
               title="Mark As Not Started"
+              icon={TaskIcon.NotStarted}
               onAction={() => {
                 changeTaskStatus(task.pageId, "not started");
                 setTimeout(revalidate, 200);
               }}
-              shortcut={{ modifiers: ["cmd"], key: "n" }}
+              shortcut={{ modifiers: ["ctrl"], key: "x" }}
             />
             <Action
               title="Reload"
@@ -128,7 +250,7 @@ export function Search() {
       return (
         task.status !== "done" ||
         task.dueDate === undefined ||
-        oneWeekAgo.getTime() - task.dueDate.getTime() < 0
+        oneWeekAgo.getTime() - task.dueDate.start.getTime() < 0
       );
     })
     .sort((a: Task, b: Task) => {

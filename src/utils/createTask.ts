@@ -14,7 +14,7 @@ export default function createTask(task: TaskFormValue) {
       database_id: task_database_id,
     },
     icon: (() => {
-      if (task.emoji === undefined) {
+      if (task.emoji === undefined || task.emoji === "") {
         return undefined;
       }
       return {
@@ -23,7 +23,7 @@ export default function createTask(task: TaskFormValue) {
       };
     })(),
     properties: {
-      タイトル: {
+      Title: {
         type: "title",
         title: [
           {
@@ -35,18 +35,47 @@ export default function createTask(task: TaskFormValue) {
           },
         ],
       },
-      ステータス: {
+      Status: {
         type: "status",
         status: { id: "1" },
       },
-      期限: {
+      "Due Date": {
         type: "date",
         date: (() => {
           if (task.deadline === null) {
             return null;
           }
-          return { start: task.deadline?.toISOString() };
+          return { start: task.deadline?.toISOString() ?? "" };
         })(),
+      },
+      Details: {
+        type: "rich_text",
+        rich_text: [
+          {
+            text: {
+              content: task.details ?? "",
+            },
+          },
+        ],
+      },
+      Link: {
+        type: "url",
+        url: (() => {
+          if (
+            task.link === null ||
+            task.link === undefined ||
+            task.link === ""
+          ) {
+            return null;
+          }
+          return task.link;
+        })(),
+      },
+      Tags: {
+        type: "multi_select",
+        multi_select: task.tags.map((v) => {
+          return { name: v };
+        }),
       },
     },
   });

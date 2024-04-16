@@ -10,7 +10,7 @@ export function changeTaskStatus(pageId: string, status: TaskStatus) {
   client.pages.update({
     page_id: pageId,
     properties: {
-      ステータス: {
+      Status: {
         status: {
           id: (() => {
             switch (status) {
