@@ -29,6 +29,7 @@ export default async function getTaskLists(): Promise<TaskLists> {
       details: "",
       pageId: task.id,
       link: null,
+      contentMarkdown: async () => "No Content",
     };
 
     {
@@ -85,8 +86,7 @@ export default async function getTaskLists(): Promise<TaskLists> {
       } else {
         taskInfo.dueDate = {
           start: new Date(dueDate.date.start),
-          end:
-            dueDate.date.end === null ? undefined : new Date(dueDate.date.end),
+          end: dueDate.date.end === null ? undefined : new Date(dueDate.date.end),
         };
       }
     }
@@ -103,9 +103,7 @@ export default async function getTaskLists(): Promise<TaskLists> {
     taskInfo.contentMarkdown = async () => {
       let md = "";
       try {
-        md = n2m.toMarkdownString(
-          await n2m.pageToMarkdown(taskInfo.pageId),
-        ).parent;
+        md = n2m.toMarkdownString(await n2m.pageToMarkdown(taskInfo.pageId)).parent;
       } catch (e) {
         console.error(`Cannot find id = ${taskInfo.pageId}`);
       }

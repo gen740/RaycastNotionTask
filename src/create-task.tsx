@@ -1,10 +1,4 @@
-import {
-  Action,
-  ActionPanel,
-  Detail,
-  Form,
-  getPreferenceValues,
-} from "@raycast/api";
+import { Action, ActionPanel, Detail, Form, getPreferenceValues } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { EmojiList } from "./emoji";
 import type { Emoji, TaskFormValue } from "./type";
@@ -15,9 +9,7 @@ import { Client } from "@notionhq/client";
 const { notion_token, task_database_id } = getPreferenceValues<Preferences>();
 
 export function Create() {
-  const [submittedValue, setSubmittedValue] = useState<TaskFormValue | null>(
-    null,
-  );
+  const [submittedValue, setSubmittedValue] = useState<TaskFormValue | null>(null);
   const [emojiError, setEmojiError] = useState<string | undefined>();
   const [titleError, setTitleError] = useState<string | undefined>();
   const [tags, setTags] = useState<string[]>([]);
@@ -29,9 +21,7 @@ export function Create() {
       })
       .then((value) => {
         if (value.properties.Tags.type === "multi_select") {
-          setTags(
-            value.properties.Tags.multi_select.options.map((v) => v.name),
-          );
+          setTags(value.properties.Tags.multi_select.options.map((v) => v.name));
         }
       });
   });

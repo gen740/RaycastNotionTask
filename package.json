@@ -1,23 +1,25 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "notion-task",
-  "title": "Notion task",
+  "title": "Notion Task",
   "description": "Manage tasks created by Notion",
   "icon": "notion-logo.png",
   "author": "gen740",
-  "categories": ["Productivity"],
+  "categories": [
+    "Productivity"
+  ],
   "license": "MIT",
   "commands": [
     {
       "name": "search-tasks",
-      "title": "Search tasks",
+      "title": "Search Tasks",
       "subtitle": "Notion Search tasks",
       "description": "Search tasks created by Notion",
       "mode": "view"
     },
     {
       "name": "create-task",
-      "title": "Create task",
+      "title": "Create Task",
       "subtitle": "Notion Create tasks",
       "description": "Create task in Notion",
       "mode": "view"

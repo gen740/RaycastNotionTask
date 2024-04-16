@@ -19,21 +19,16 @@ const TaskMarkdown = ({
 }) => {
   const [mdContent, setMdContent] = useState<string | undefined>(undefined);
   useEffect(() => {
-    task
-      .contentMarkdown?.()
-      .then((value) => setMdContent(value ?? "No Content"));
+    task.contentMarkdown().then((value) => setMdContent(value ?? "No Content"));
   });
   return (
     <Detail
       isLoading={mdContent === undefined}
-      markdown={`${mdContent}`}
+      markdown={`${mdContent ?? "Loading..."}`}
       metadata={
         <Detail.Metadata>
           <Detail.Metadata.Label icon={icon} title="Title" text={task.title} />
-          <Detail.Metadata.Label
-            title="Due Date"
-            text={task.dueDate?.start.toDateString() ?? "No date"}
-          />
+          <Detail.Metadata.Label title="Due Date" text={task.dueDate?.start.toDateString() ?? "No date"} />
         </Detail.Metadata>
       }
       actions={
@@ -78,11 +73,7 @@ const TaskMarkdown = ({
             }}
             shortcut={{ modifiers: ["ctrl"], key: "x" }}
           />
-          <Action
-            title="Reload"
-            onAction={revalidate}
-            shortcut={{ modifiers: ["cmd"], key: "r" }}
-          />
+          <Action title="Reload" onAction={revalidate} shortcut={{ modifiers: ["cmd"], key: "r" }} />
         </ActionPanel>
       }
     />
@@ -104,10 +95,7 @@ const TaskIcon = {
   },
 };
 
-const Items = ({
-  items,
-  revalidate,
-}: { items: TaskLists | undefined; revalidate: () => void }) => {
+const Items = ({ items, revalidate }: { items: TaskLists | undefined; revalidate: () => void }) => {
   return items?.map((task) => {
     let icon = {
       source: "icon/kanban_status_backlog.png",
@@ -149,10 +137,7 @@ const Items = ({
       dueDateStart = `${mm}/${dd}`;
       accessories.push({
         icon: {
-          source:
-            task.dueDate.end === undefined
-              ? "icon/date_end.png"
-              : "icon/date_start.png",
+          source: task.dueDate.end === undefined ? "icon/date_end.png" : "icon/date_start.png",
         },
         text: dueDateStart,
       });
@@ -183,9 +168,7 @@ const Items = ({
             <Action.Push
               title="Show Detail"
               icon={Icon.AppWindowSidebarLeft}
-              target={
-                <TaskMarkdown icon={icon} task={task} revalidate={revalidate} />
-              }
+              target={<TaskMarkdown icon={icon} task={task} revalidate={revalidate} />}
             />
             {task.link === null ? (
               <></>
@@ -227,11 +210,7 @@ const Items = ({
               }}
               shortcut={{ modifiers: ["ctrl"], key: "x" }}
             />
-            <Action
-              title="Reload"
-              onAction={revalidate}
-              shortcut={{ modifiers: ["cmd"], key: "r" }}
-            />
+            <Action title="Reload" onAction={revalidate} shortcut={{ modifiers: ["cmd"], key: "r" }} />
           </ActionPanel>
         }
       />
@@ -248,9 +227,7 @@ export function Search() {
   const filteredTask = data
     ?.filter((task) => {
       return (
-        task.status !== "done" ||
-        task.dueDate === undefined ||
-        oneWeekAgo.getTime() - task.dueDate.start.getTime() < 0
+        task.status !== "done" || task.dueDate === undefined || oneWeekAgo.getTime() - task.dueDate.start.getTime() < 0
       );
     })
     .sort((a: Task, b: Task) => {

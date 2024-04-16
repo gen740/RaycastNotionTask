@@ -61,11 +61,7 @@ export default function createTask(task: TaskFormValue) {
       Link: {
         type: "url",
         url: (() => {
-          if (
-            task.link === null ||
-            task.link === undefined ||
-            task.link === ""
-          ) {
+          if (task.link === null || task.link === undefined || task.link === "") {
             return null;
           }
           return task.link;

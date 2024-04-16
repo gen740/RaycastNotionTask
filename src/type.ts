@@ -12,7 +12,7 @@ export interface Task {
   };
   pageId: string;
   link: string | null;
-  contentMarkdown?: () => Promise<string | undefined>;
+  contentMarkdown: () => Promise<string | undefined>;
 }
 
 // biome-ignore format:
@@ -26,5 +26,5 @@ export interface TaskFormValue {
   details: string | undefined;
   link: string | undefined;
   deadline: Date | null;
-  tags: string[]
+  tags: string[];
 }
