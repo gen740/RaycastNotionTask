@@ -72,7 +72,7 @@ export function Create() {
         onChange={validateTitle}
         onBlur={(event) => validateTitle(event.target.value)}
       />
-      <Form.DatePicker id="deadline" title="Due Date" />
+      <Form.DatePicker id="dueDate" title="Due Date" />
       <Form.TextField
         id="emoji"
         title="Icon"

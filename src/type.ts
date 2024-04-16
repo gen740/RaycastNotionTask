@@ -12,7 +12,6 @@ export interface Task {
   };
   pageId: string;
   link: string | null;
-  contentMarkdown: () => Promise<string | undefined>;
 }
 
 // biome-ignore format:
@@ -25,6 +24,6 @@ export interface TaskFormValue {
   title: string;
   details: string | undefined;
   link: string | undefined;
-  deadline: Date | null;
+  dueDate: Date | null;
   tags: string[];
 }

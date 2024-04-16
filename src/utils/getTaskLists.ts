@@ -4,13 +4,11 @@ import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoint
 import { getPreferenceValues } from "@raycast/api";
 import type { Task, TaskLists } from "../type";
 import parseRichTextItem from "./parseRichTextItem";
-import { NotionToMarkdown } from "notion-to-md";
 
 const { notion_token, task_database_id } = getPreferenceValues<Preferences>();
 
 export default async function getTaskLists(): Promise<TaskLists> {
   const client = new Client({ auth: notion_token });
-  const n2m = new NotionToMarkdown({ notionClient: client });
 
   const ret: TaskLists = [];
 
@@ -29,7 +27,6 @@ export default async function getTaskLists(): Promise<TaskLists> {
       details: "",
       pageId: task.id,
       link: null,
-      contentMarkdown: async () => "No Content",
     };
 
     {
@@ -86,7 +83,8 @@ export default async function getTaskLists(): Promise<TaskLists> {
       } else {
         taskInfo.dueDate = {
           start: new Date(dueDate.date.start),
-          end: dueDate.date.end === null ? undefined : new Date(dueDate.date.end),
+          end:
+            dueDate.date.end === null ? undefined : new Date(dueDate.date.end),
         };
       }
     }
@@ -99,16 +97,6 @@ export default async function getTaskLists(): Promise<TaskLists> {
       }
       taskInfo.link = link.url;
     }
-
-    taskInfo.contentMarkdown = async () => {
-      let md = "";
-      try {
-        md = n2m.toMarkdownString(await n2m.pageToMarkdown(taskInfo.pageId)).parent;
-      } catch (e) {
-        console.error(`Cannot find id = ${taskInfo.pageId}`);
-      }
-      return md;
-    };
 
     ret.push(taskInfo);
   }

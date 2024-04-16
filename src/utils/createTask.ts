@@ -42,10 +42,10 @@ export default function createTask(task: TaskFormValue) {
       "Due Date": {
         type: "date",
         date: (() => {
-          if (task.deadline === null) {
+          if (task.dueDate === null) {
             return null;
           }
-          return { start: task.deadline?.toISOString() ?? "" };
+          return { start: task.dueDate?.toISOString() ?? "" };
         })(),
       },
       Details: {
@@ -61,7 +61,11 @@ export default function createTask(task: TaskFormValue) {
       Link: {
         type: "url",
         url: (() => {
-          if (task.link === null || task.link === undefined || task.link === "") {
+          if (
+            task.link === null ||
+            task.link === undefined ||
+            task.link === ""
+          ) {
             return null;
           }
           return task.link;
