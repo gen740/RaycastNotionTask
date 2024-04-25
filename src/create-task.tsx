@@ -55,7 +55,7 @@ export function Create() {
       actions={
         <ActionPanel>
           <Action.SubmitForm
-            title="Submit Favorite"
+            title="Submit"
             onSubmit={(values: TaskFormValue) => {
               createTask(values);
               setSubmittedValue(values);

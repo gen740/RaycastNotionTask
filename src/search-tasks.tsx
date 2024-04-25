@@ -29,24 +29,9 @@ const TaskMarkdown = ({
       metadata={
         <Detail.Metadata>
           <Detail.Metadata.Label icon={icon} title="Title" text={task.title} />
-          {task.details === "" ? (
-            <></>
-          ) : (
-            <Detail.Metadata.Label title="Details" text={task.details} />
-          )}
-          <Detail.Metadata.Label
-            title="Due Date"
-            text={task.dueDate?.start.toDateString() ?? "No date"}
-          />
-          {task.link === null ? (
-            <></>
-          ) : (
-            <Detail.Metadata.Link
-              title="Link"
-              text={task.link}
-              target={task.link}
-            />
-          )}
+          {task.details === "" ? <></> : <Detail.Metadata.Label title="Details" text={task.details} />}
+          <Detail.Metadata.Label title="Due Date" text={task.dueDate?.start.toDateString() ?? "No date"} />
+          {task.link === null ? <></> : <Detail.Metadata.Link title="Link" text={task.link} target={task.link} />}
         </Detail.Metadata>
       }
       actions={
@@ -91,11 +76,7 @@ const TaskMarkdown = ({
             }}
             shortcut={{ modifiers: ["ctrl"], key: "x" }}
           />
-          <Action
-            title="Reload"
-            onAction={revalidate}
-            shortcut={{ modifiers: ["cmd"], key: "r" }}
-          />
+          <Action title="Reload" onAction={revalidate} shortcut={{ modifiers: ["cmd"], key: "r" }} />
         </ActionPanel>
       }
     />
@@ -117,10 +98,7 @@ const TaskIcon = {
   },
 };
 
-const Items = ({
-  items,
-  revalidate,
-}: { items: TaskLists | undefined; revalidate: () => void }) => {
+const Items = ({ items, revalidate }: { items: TaskLists | undefined; revalidate: () => void }) => {
   return items?.map((task) => {
     let icon = {
       source: "icon/kanban_status_backlog.png",
@@ -162,10 +140,7 @@ const Items = ({
       dueDateStart = `${mm}/${dd}`;
       accessories.push({
         icon: {
-          source:
-            task.dueDate.end === undefined
-              ? "icon/date_end.png"
-              : "icon/date_start.png",
+          source: task.dueDate.end === undefined ? "icon/date_end.png" : "icon/date_start.png",
         },
         text: dueDateStart,
       });
@@ -196,9 +171,7 @@ const Items = ({
             <Action.Push
               title="Show Detail"
               icon={Icon.AppWindowSidebarLeft}
-              target={
-                <TaskMarkdown icon={icon} task={task} revalidate={revalidate} />
-              }
+              target={<TaskMarkdown icon={icon} task={task} revalidate={revalidate} />}
             />
             {task.link === null ? (
               <></>
@@ -240,11 +213,7 @@ const Items = ({
               }}
               shortcut={{ modifiers: ["ctrl"], key: "x" }}
             />
-            <Action
-              title="Reload"
-              onAction={revalidate}
-              shortcut={{ modifiers: ["cmd"], key: "r" }}
-            />
+            <Action title="Reload" onAction={revalidate} shortcut={{ modifiers: ["cmd"], key: "r" }} />
           </ActionPanel>
         }
       />
@@ -261,9 +230,7 @@ export function Search() {
   const filteredTask = data
     ?.filter((task) => {
       return (
-        task.status !== "done" ||
-        task.dueDate === undefined ||
-        oneWeekAgo.getTime() - task.dueDate.start.getTime() < 0
+        task.status !== "done" || task.dueDate === undefined || oneWeekAgo.getTime() - task.dueDate.start.getTime() < 0
       );
     })
     .sort((a: Task, b: Task) => {

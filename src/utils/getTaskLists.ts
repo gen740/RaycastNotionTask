@@ -83,8 +83,7 @@ export default async function getTaskLists(): Promise<TaskLists> {
       } else {
         taskInfo.dueDate = {
           start: new Date(dueDate.date.start),
-          end:
-            dueDate.date.end === null ? undefined : new Date(dueDate.date.end),
+          end: dueDate.date.end === null ? undefined : new Date(dueDate.date.end),
         };
       }
     }

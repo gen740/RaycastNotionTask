@@ -9,10 +9,7 @@ const n2m = new NotionToMarkdown({
 
 export async function fetchNotionContentAsMarkdown(pageId: string) {
   try {
-    return (
-      n2m.toMarkdownString(await n2m.pageToMarkdown(pageId)).parent ??
-      "No Content"
-    );
+    return n2m.toMarkdownString(await n2m.pageToMarkdown(pageId)).parent ?? "No Content";
   } catch (e) {
     console.error(`Cannot find id = ${pageId}`);
   }
