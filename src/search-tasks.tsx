@@ -230,7 +230,8 @@ export function Search() {
   const filteredTask = data
     ?.filter((task) => {
       return (
-        task.status !== "done" || task.dueDate === undefined || oneWeekAgo.getTime() - task.dueDate.start.getTime() < 0
+        // Search でヒットする query
+        task.status !== "done" || (task.dueDate !== undefined && oneWeekAgo.getTime() - task.dueDate.start.getTime() < 0)
       );
     })
     .sort((a: Task, b: Task) => {
